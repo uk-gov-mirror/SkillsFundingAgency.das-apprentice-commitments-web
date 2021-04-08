@@ -9,6 +9,7 @@ using SFA.DAS.ApprenticeCommitments.Web.Services.OuterApi;
 
 namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
 {
+    [RequiresIdentityConfirmed]
     public class ConfirmYourEmployerModel : PageModel, IHasBackLink
     {
         private readonly IOuterApiClient _client;
@@ -30,18 +31,11 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
 
         public async Task<IActionResult> OnGet()
         {
-            try
-            {
-                var apprenticeship = await _client
-                    .GetApprenticeship(_authenticatedUser.ApprenticeId, ApprenticeshipId.Id);
-                EmployerName = apprenticeship.EmployerName;
-                ConfirmedEmployer = apprenticeship.EmployerCorrect;
-                return Page();
-            }
-            catch (RestEase.ApiException e) when (e.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                return RedirectToPage("/ConfirmYourIdentity");
-            }
+            var apprenticeship = await _client
+                .GetApprenticeship(_authenticatedUser.ApprenticeId, ApprenticeshipId.Id);
+            EmployerName = apprenticeship.EmployerName;
+            ConfirmedEmployer = apprenticeship.EmployerCorrect;
+            return Page();
         }
 
         public async Task<IActionResult> OnPost()
