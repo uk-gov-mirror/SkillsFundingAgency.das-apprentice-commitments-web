@@ -18,7 +18,6 @@ using WireMock.ResponseBuilders;
 namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
 {
     [Binding]
-    [Scope(Feature = "ConfirmIdentity")]
     public class ConfirmIdentitySteps : StepsBase
     {
         private readonly TestContext _context;
@@ -46,6 +45,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
         }
 
         [Given("the apprentice has logged in")]
+        [Given("a logged in user")]
         public void GivenTheApprenticeHasLoggedIn()
         {
             TestAuthenticationHandler.AddUser(_userContext.ApprenticeId);

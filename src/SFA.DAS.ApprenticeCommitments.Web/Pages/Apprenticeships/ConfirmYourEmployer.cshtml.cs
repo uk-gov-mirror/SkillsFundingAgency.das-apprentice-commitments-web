@@ -28,12 +28,20 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
             _authenticatedUser = authenticatedUser;
         }
 
-        public async Task OnGet()
+        public async Task<IActionResult> OnGet()
         {
-            var apprenticeship = await _client
-                .GetApprenticeship(_authenticatedUser.ApprenticeId, ApprenticeshipId.Id);
-            EmployerName = apprenticeship.EmployerName;
-            ConfirmedEmployer = apprenticeship.EmployerCorrect;
+            try
+            {
+                var apprenticeship = await _client
+                    .GetApprenticeship(_authenticatedUser.ApprenticeId, ApprenticeshipId.Id);
+                EmployerName = apprenticeship.EmployerName;
+                ConfirmedEmployer = apprenticeship.EmployerCorrect;
+                return Page();
+            }
+            catch (RestEase.ApiException e) when (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return RedirectToPage("/ConfirmYourIdentity");
+            }
         }
 
         public async Task<IActionResult> OnPost()
