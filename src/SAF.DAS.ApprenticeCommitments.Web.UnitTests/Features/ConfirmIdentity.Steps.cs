@@ -29,7 +29,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
             _context = context;
             _userContext = userContext;
 
-            _context.OuterApi.MockServer.Given(
+            _context.OuterApi?.MockServer.Given(
                     Request.Create()
                         .UsingPost()
                         .WithPath($"/registrations/{_userContext.ApprenticeId}/firstseen")
@@ -49,6 +49,14 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
         public void GivenTheApprenticeHasLoggedIn()
         {
             TestAuthenticationHandler.AddUser(_userContext.ApprenticeId);
+            _context.Web.Client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(_userContext.ApprenticeId.ToString());
+        }
+
+        [Given("an unverified logged in user")]
+        public void GivenAVerifiedApprenticeHasLoggedIn()
+        {
+            TestAuthenticationHandler.AddUnverifiedUser(_userContext.ApprenticeId);
             _context.Web.Client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(_userContext.ApprenticeId.ToString());
         }
