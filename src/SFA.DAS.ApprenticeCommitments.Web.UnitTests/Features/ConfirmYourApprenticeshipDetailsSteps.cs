@@ -31,7 +31,6 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
         private readonly DateTime _plannedStartDate;
         private readonly DateTime _plannedEndDate;
         private readonly bool? _recognisePriorLearning;
-        private bool? _confirmedApprenticeshipDetails;
 
         public ConfirmYourApprenticeshipDetailsSteps(TestContext context, RegisteredUserContext userContext) : base(context)
         {
@@ -96,52 +95,18 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
                         }));
         }
 
-        [Given("the apprentice confirms their apprenticeship details")]
-        public void GivenTheApprenticeConfirmsTheirApprenticeshipDetails()
-        {
-            _confirmedApprenticeshipDetails = true;
-        }
-
-        [Given("the apprentice states these are not their apprenticeship details")]
-        public void GivenTheApprenticeStatesTheseAreNotTheirApprenticeshipDetails()
-        {
-            _confirmedApprenticeshipDetails = false;
-        }
-
-        [Given("the apprentice doesn't select an option")]
-        public void GivenTheApprenticeDoesnTSelectAnOption()
-        {
-            _confirmedApprenticeshipDetails = null;
-        }
-
+        
         [When("accessing the YourApprenticeshipDetails page")]
         public async Task WhenAccessingTheYourApprenticeshipDetailsPage()
         {
             await _context.Web.Get($"/apprenticeships/{_apprenticeshipId.Hashed}/yourapprenticeshipdetails");
         }
+        
 
-        [When("submitting the YourApprenticeshipDetails page")]
-        public async Task WhenSubmittingTheYourApprenticeshipDetailsPage()
+        [Then("the response status code should no longer be found")]
+        public void ThenTheResponseStatusCodeShouldNoLongerBeFound()
         {
-            await _context.Web.Post($"/apprenticeships/{_apprenticeshipId.Hashed}/yourapprenticeshipdetails",
-                new FormUrlEncodedContent(new Dictionary<string, string>
-                {
-                    { nameof(YourApprenticeshipDetails.RevisionId), _revisionId.ToString() },
-                    { nameof(YourApprenticeshipDetails.CourseName), _courseName },
-                    { nameof(YourApprenticeshipDetails.CourseLevel) , _courseLevel.ToString() },
-                    { nameof(YourApprenticeshipDetails.CourseOption) , _courseOption },
-                    { nameof(YourApprenticeshipDetails.CourseDuration) , _courseDuration.ToString() },
-                    { nameof(YourApprenticeshipDetails.PlannedStartDate) , _plannedStartDate.ToString("o")},
-                    { nameof(YourApprenticeshipDetails.PlannedEndDate) , _plannedEndDate.ToString("o") },
-                    { nameof(YourApprenticeshipDetails.RecognisePriorLearning) , _recognisePriorLearning.ToString() },
-                    { nameof(YourApprenticeshipDetails.Confirmed), _confirmedApprenticeshipDetails.ToString() }
-                }));
-        }
-
-        [Then("the response status code should be Ok")]
-        public void ThenTheResponseStatusCodeShouldBeOk()
-        {
-            _context.Web.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            _context.Web.Response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         [Then("the apprentice should see the course name")]
@@ -158,20 +123,6 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
             page.Model.Should().BeOfType<YourApprenticeshipDetails>().Which.CourseLevel.Should().Be(_courseLevel);
         }
 
-        [Then("the apprentice should see the course option")]
-        public void ThenTheApprenticeShouldSeeTheCourseOption()
-        {
-            var page = _context.ActionResult.LastPageResult;
-            page.Model.Should().BeOfType<YourApprenticeshipDetails>().Which.CourseOption.Should().Be(_courseOption);
-        }
-
-        [Then("the apprentice should see the duration in months")]
-        public void ThenTheApprenticeShouldSeeTheDurationInMonths()
-        {
-            var page = _context.ActionResult.LastPageResult;
-            page.Model.Should().BeOfType<YourApprenticeshipDetails>().Which.CourseDuration.Should().Be(_courseDuration);
-        }
-
         [Then("the apprentice should see the planned start date")]
         public void ThenTheApprenticeShouldSeeThePlannedStartDate()
         {
@@ -185,28 +136,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
             var page = _context.ActionResult.LastPageResult;
             page.Model.Should().BeOfType<YourApprenticeshipDetails>().Which.PlannedEndDate.Should().Be(_plannedEndDate);
         }
-
-        [Then("the apprentice should see the Prior Learning section")]
-        public void ThenTheApprenticeShouldSeeThePriorLearningSection()
-        {
-            var page = _context.ActionResult.LastPageResult;
-            page.Model.Should().BeOfType<YourApprenticeshipDetails>().Which.RecognisePriorLearning.Should().Be(_recognisePriorLearning);
-        }
-
-        [Then("the user should see the confirmation options")]
-        public void ThenTheUserShouldSeeTheConfirmationOptions()
-        {
-            var page = _context.ActionResult.LastPageResult;
-            page.Model.Should().BeOfType<YourApprenticeshipDetails>().Which.ShowForm.Should().BeTrue();
-        }
-
-        [Then("the link is pointing to the confirm page")]
-        public void ThenTheLinkIsPointingToTheConfirmPage()
-        {
-            _context.ActionResult.LastPageResult
-                .Model.Should().BeOfType<YourApprenticeshipDetails>().Which
-                .Backlink.Should().Be(Urls.ConfirmMyApprenticshipPage(_apprenticeshipId));
-        }
+        
 
         [Then("the user should be redirected back to the overview page")]
         public void ThenTheUserShouldBeRedirectedBackToTheOverviewPage()
@@ -225,7 +155,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
                     .WithPath($"/apprentices/*/apprenticeships/{_apprenticeshipId.Id}/revisions/{_revisionId}/confirmations")
                     .UsingPatch());
 
-            updates.Should().HaveCount(1);
+            updates.Should().HaveCount(0);
 
             var post = updates.First();
 

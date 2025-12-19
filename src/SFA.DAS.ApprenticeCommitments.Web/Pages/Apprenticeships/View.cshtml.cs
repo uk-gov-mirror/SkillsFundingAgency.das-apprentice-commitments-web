@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.ApprenticeCommitments.Web.Exceptions;
 using SFA.DAS.ApprenticeCommitments.Web.Identity;
+using SFA.DAS.ApprenticeCommitments.Web.Services;
 using SFA.DAS.ApprenticeCommitments.Web.Services.OuterApi;
 using SFA.DAS.ApprenticePortal.Authentication;
 using SFA.DAS.ApprenticePortal.SharedUi.Filters;
@@ -16,17 +17,26 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
         private readonly IOuterApiClient _client;
         private readonly AuthenticatedUser _authenticatedUser;
         private readonly ILogger<ViewMyApprenticeshipModel> _logger;
+        private readonly ApprenticeApi _apprentices;
 
         [BindProperty(SupportsGet = true)]
         public HashedId ApprenticeshipId { get; set; }
         public long? RevisionId { get; set; }
         public Apprenticeship LatestConfirmedApprenticeship { get; set; } = null!;
+        
+        [BindProperty]
+        public string? FirstName { get; set; } = null!;         
+        
+        [BindProperty]
+        public string? LastName { get; set; } = null!;         
 
-        public ViewMyApprenticeshipModel(IOuterApiClient client, AuthenticatedUser authenticatedUser, ILogger<ViewMyApprenticeshipModel> logger)
+
+        public ViewMyApprenticeshipModel(IOuterApiClient client, AuthenticatedUser authenticatedUser, ILogger<ViewMyApprenticeshipModel> logger, ApprenticeApi _apprentices)
         {
             _client = client;
             _authenticatedUser = authenticatedUser;
             _logger = logger;
+            this._apprentices = _apprentices;
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -42,6 +52,12 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
                     await _client.GetMyApprenticeship(_authenticatedUser.ApprenticeId, ApprenticeshipId.Id);
                 LatestConfirmedApprenticeship = apprenticeship;
                 RevisionId = apprenticeship.RevisionId;
+                
+                var apprentice = await _apprentices.TryGetApprentice(_authenticatedUser.ApprenticeId);
+
+                LastName = apprentice?.LastName;
+                FirstName = apprentice?.FirstName;
+                
                 
                 // Return the page if successful
                 return Page();

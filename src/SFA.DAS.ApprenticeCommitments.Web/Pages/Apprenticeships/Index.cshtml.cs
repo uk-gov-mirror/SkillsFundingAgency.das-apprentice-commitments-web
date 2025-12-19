@@ -42,6 +42,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
                 }
 
                 var apprenticeship = await _client.TryGetApprenticeships(user.ApprenticeId);
+                
                 if (apprenticeship == null) return Redirect(_urlHelper.Generate(NavigationSection.PersonalDetails));
 
                 if (apprenticeship.Apprenticeships.Count == 0)
@@ -52,7 +53,8 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
 
                 if (firstApprenticeship.IsStopped || firstApprenticeship.ConfirmedOn == null)
                 {
-                    return RedirectToPage("Confirm", new { apprenticeshipId });
+                    return RedirectToPage("confirmyourapprenticeshipdetails", new { apprenticeshipId = apprenticeshipId });
+                    
                 }
                 return RedirectToPage("View", new { apprenticeshipId });
             }

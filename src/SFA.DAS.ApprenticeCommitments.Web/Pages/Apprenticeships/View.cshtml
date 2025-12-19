@@ -1,104 +1,197 @@
-﻿@page "/apprenticeships/{apprenticeshipId}/view"
+﻿@page "/apprenticeships/{apprenticeshipId}/"
 @model SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships.ViewMyApprenticeshipModel
 @using SFA.DAS.ApprenticeCommitments.Web.Helpers
 @using SFA.DAS.ApprenticeCommitments.Web.Services.OuterApi
+@using WebEssentials.AspNetCore.CdnTagHelpers
 @{
-    ViewData["Title"] = "My apprenticeship";
+    ViewData["Title"] = "Your apprenticeship";
     var showEmploymentFields = @Model.LatestConfirmedApprenticeship.DeliveryModel == DeliveryModel.PortableFlexiJob;
 }
 
-<div class="govuk-width-container" id="dashboard-section">
+<main role="main" id="content" class="govuk-main-wrapper">
+    <span id="Top"></span>
+
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l">
-                My apprenticeship
-                <span class="govuk-caption-m">@Model.LatestConfirmedApprenticeship.CourseName</span>
-            </h1>
+            <div class="gem-c-heading govuk-!-margin-bottom-8">
+                <h1 class="gem-c-heading__text govuk-heading-xl">
+                    Welcome, @Model.FirstName
+                </h1>
+            </div>
+        </div>
+    </div>
 
-            <div class="govuk-!-padding-bottom-2">
-                <table class="govuk-table data-table">
-                    <caption class="govuk-table__caption govuk-table__caption--m">Training details</caption>
-                    <tbody class="govuk-table__body">
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Current employer</th>
-                        <td class="govuk-table__cell">@Model.LatestConfirmedApprenticeship.EmployerName</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Training provider</th>
-                        <td class="govuk-table__cell">@Model.LatestConfirmedApprenticeship.TrainingProviderName</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Level</th>
-                        <td class="govuk-table__cell">@Model.LatestConfirmedApprenticeship.CourseLevel</td>
-                    </tr>
-                    @if (Utilities.IsValidApprenticeshipType(Model.LatestConfirmedApprenticeship.ApprenticeshipType))
-                    {
-                        <tr class="govuk-table__row">
-                            <th scope="row" class="govuk-table__header">Type</th>
-                            <td class="govuk-table__cell">@Utilities.GetApprenticeshipTypeDescription(Model.LatestConfirmedApprenticeship.ApprenticeshipType)</td>
-                        </tr>
-                    }
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Planned training start date</th>
-                        <td class="govuk-table__cell">@Model.LatestConfirmedApprenticeship.PlannedStartDate.ToString("MMMM yyyy")</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Planned training end date</th>
-                        <td class="govuk-table__cell">@Model.LatestConfirmedApprenticeship.PlannedEndDate.ToString("MMMM yyyy")</td>
-                    </tr>
-                    <tr asp-show="@showEmploymentFields" class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Current job end date</th>
-                        <td class="govuk-table__cell">@Model.LatestConfirmedApprenticeship.EmploymentEndDate?.ToString("MMMM yyyy")</td>
-                    </tr>
-                    <tr asp-show="@showEmploymentFields" class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Delivery model</th>
-                        <td class="govuk-table__cell">@Model.LatestConfirmedApprenticeship.DeliveryModel.DisplayName()</td>
-                    </tr>
-                    </tbody>
-                </table>
+    <div class="govuk-grid-row">
+        <div class="article-container group govuk-grid-column-two-thirds">
+
+            <h2 class="govuk-heading-m">Your apprenticeship details</h2>
+
+            <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        Full name
+                    </dt>
+                    <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        @Model.FirstName @Model.LastName
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        Current employer
+                    </dt>
+                    <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        @Model.LatestConfirmedApprenticeship.EmployerName
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        Training provider
+                    </dt>
+                    <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        @Model.LatestConfirmedApprenticeship.TrainingProviderName
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        Apprenticeship
+                    </dt>
+                    <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        @Model.LatestConfirmedApprenticeship.CourseName
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        Level
+                    </dt>
+                    <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        @Model.LatestConfirmedApprenticeship.CourseLevel
+                    </dd>
+                </div>
+
+                @if (Utilities.IsValidApprenticeshipType(Model.LatestConfirmedApprenticeship.ApprenticeshipType))
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                            Type
+                        </dt>
+                        <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                            @Utilities.GetApprenticeshipTypeDescription(Model.LatestConfirmedApprenticeship.ApprenticeshipType)
+                        </dd>
+                    </div>
+                }
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        Planned training start date
+                    </dt>
+                    <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        @Model.LatestConfirmedApprenticeship.PlannedStartDate.ToString("MMMM yyyy")
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        Planned training end date
+                    </dt>
+                    <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        @Model.LatestConfirmedApprenticeship.PlannedEndDate.ToString("MMMM yyyy")
+                    </dd>
+                </div>
+
+                @if (Model.LatestConfirmedApprenticeship.RecognisePriorLearning == true)
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                            Reduction in apprenticeship duration due to your prior learning
+                        </dt>
+                        <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                            @Model.LatestConfirmedApprenticeship.DurationReducedBy weeks
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                            Training reduction due to your prior learning
+                        </dt>
+                        <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                            @Model.LatestConfirmedApprenticeship.DurationReducedByHours hours
+                        </dd>
+                    </div>
+                }
+            </dl>
+
+            <div class="govuk-inset-text">
+                <p class="govuk-body govuk-!-font-weight-bold">
+                    Are any of your details wrong?
+                </p>
+                <p class="govuk-body">
+                    If your training provider is wrong, tell your contact at @Model.LatestConfirmedApprenticeship.EmployerName. If your employer or any other details are wrong, tell your contact at @Model.LatestConfirmedApprenticeship.TrainingProviderName. They'll correct them and we'll let you know when it's been done.
+                </p>
             </div>
 
-            @if (Model.LatestConfirmedApprenticeship.RecognisePriorLearning != null)
-            {
-                <div class="govuk-!-padding-bottom-2">
-                    <h2 class="govuk-heading-m">Prior learning details</h2>
+        </div>
 
-                    @if (Model.LatestConfirmedApprenticeship.RecognisePriorLearning == true)
-                    {
-                        <p>Based on your initial assessment with them, your training provider has informed us that <strong>you have relevant prior learning.</strong></p>
-                    }
+        <div class="govuk-grid-column-one-third">
 
-                    @if (Model.LatestConfirmedApprenticeship.RecognisePriorLearning == false)
-                    {
-                        <p>Based on your initial assessment with them, your training provider has informed us that <strong>you do not have relevant prior learning.</strong></p>
-                    }
+            <div class="gem-c-contextual-sidebar govuk-!-display-none-print">
+                <div data-module="ga4-link-tracker" class="gem-c-related-navigation govuk-!-display-none-print">
+                    <h2 id="related-nav-related_items" class="govuk-heading-m">
+                        Useful links
+                    </h2>
+
+                    <nav class="gem-c-related-navigation__nav-section" aria-labelledby="related-nav-related_items">
+                        <ul class="govuk-list">
+                            <li class="govuk-!-margin-bottom-4">
+                                <a href="https://www.apprenticeships.gov.uk/apprentices/roles-responsibilities"
+                                   class="govuk-link govuk-!-font-size-16">
+                                    Check roles and responsibilities
+                                </a>
+                                <p class="govuk-body govuk-!-margin-top-1 govuk-!-font-size-16">
+                                    What you, your employer and your training provider are responsible for, and what to do if you need help.
+                                </p>
+                            </li>
+                            <li class="govuk-!-margin-bottom-4">
+                                <a href="https://www.apprenticeships.gov.uk/apprentices/off-the-job"
+                                   class="govuk-link govuk-!-font-size-16">
+                                    What you need to know about your training
+                                </a>
+                            </li>
+                            <li class="govuk-!-margin-bottom-4">
+                                <a href="https://www.apprenticeships.gov.uk/apprentices/end-point-assessment/"
+                                   class="govuk-link govuk-!-font-size-16">
+                                    What you need to know about your assessment
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <!-- Get the App Widget -->
+                    <div class="govuk-!-margin-bottom-6">
+                        <div style="background: #1d70b8; border-radius: 8px; padding: 1.5rem; text-align: center; color: white;">
+                            <h3 class="govuk-heading-s" style="color: white; margin-top: 0; margin-bottom: 1rem;">Get the app</h3>
+                            <p class="govuk-body govuk-!-margin-bottom-3" style="color: white;">Supporting you to achieve your apprenticeship</p>
+
+                            <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem;">
+                                <a href="https://play.google.com/store/apps/details?id=uk.gov.education.myapprenticeship&hl=en-US" class="app-badge-link">
+                                    <img src="https://assets.publishing.service.gov.uk/media/685c12e77d72089d19976136/Play_Store_Badge.svg"
+                                         alt="Get it on Google Play"
+                                         style="height: 40px; width: auto;"/>
+                                </a>
+
+                                <a href="https://apps.apple.com/gb/app/your-apprenticeship/id6738137983" class="app-badge-link">
+                                    <img src="https://assets.publishing.service.gov.uk/media/685c13004cd6b03168709841/App_Store_Badge.svg"
+                                         alt="Download on the App Store"
+                                         style="height: 40px; width: auto;"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-            }
-
+            </div>
         </div>
     </div>
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-third">
-            <h2 class="govuk-heading-s">
-                <a asp-page="/Apprenticeships/RolesAndResponsibilities/Index" class="govuk-link" asp-route-apprenticeshipId="@Model.ApprenticeshipId" asp-route-revisionId="@Model.RevisionId">
-                    Roles and responsibilities
-                </a>
-            </h2>
-            <p class="govuk-hint">
-                You can read through the roles and responsibilities for you, your employer and your training provider.
-            </p>
-            <hr class="govuk-section-break govuk-section-break--visible  govuk-section-break--l" />
-        </div>
-        <div class="govuk-grid-column-one-third">
-            <h2 class="govuk-heading-s">
-                <a asp-page="/Apprenticeships/HowYourApprenticeshipWillBeDelivered" asp-route-apprenticeshipId="@Model.ApprenticeshipId" asp-route-revisionId="@Model.RevisionId" class="govuk-link">
-                    How your apprenticeship will be delivered
-                </a>
-            </h2>
-            <p class="govuk-hint">
-                View details of how your apprenticeship will be delivered.
-            </p>
-            <hr class="govuk-section-break govuk-section-break--visible  govuk-section-break--l" />
-        </div>
-    </div>
-</div>
+</main>

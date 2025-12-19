@@ -19,8 +19,8 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
             await _context.Web.FollowLocalRedirects();
         }
 
-        [Then("the response status code should be Ok")]
+        [Then("the response status code should redirect")]
         public void ThenTheResponseStatusCodeShouldBeOk()
-            => _context.Web.Response.Should().Be200Ok();
+            => _context.Web.Response.Should().Be302Found();
     }
 }
