@@ -84,24 +84,28 @@
                     @Model.PlannedEndDate.ToString("MMMM yyyy")
                 </dd>
             </div>
+          
+            @if (Model.Rpl.HasValue && Model.Rpl.Value)
+            {
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        Reduction in apprenticeship duration due to your prior learning
+                    </dt>
+                    <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        @Model.DurationReducedBy weeks
+                    </dd>
+                </div>
 
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
-                    Reduction in apprenticeship duration due to your prior learning
-                </dt>
-                <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
-                    @Model.DurationReducedBy weeks
-                </dd>
-            </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        Training reduction due to your prior learning
+                    </dt>
+                    <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        @Model.DurationReducedByHours hours
+                    </dd>
+                </div>
+            }
 
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
-                    Training reduction due to your prior learning
-                </dt>
-                <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
-                    @Model.DurationReducedByHours hours
-                </dd>
-            </div>
         </dl>
 
         <div class="govuk-inset-text">

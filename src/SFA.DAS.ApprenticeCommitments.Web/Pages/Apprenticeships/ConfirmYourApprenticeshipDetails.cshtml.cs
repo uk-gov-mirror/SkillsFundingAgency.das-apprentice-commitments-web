@@ -35,6 +35,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
         public DateTime PlannedEndDate { get; set; }
         public int? DurationReducedBy { get; set; }
         public int? DurationReducedByHours { get; set; }
+        public bool? Rpl { get; set; }
         
         public string Forwardlink => $"/apprenticeships/{ApprenticeshipId.Hashed}/";
 
@@ -90,6 +91,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
             PlannedEndDate = apprenticeship.PlannedEndDate;
             DurationReducedBy = apprenticeship.DurationReducedBy;
             DurationReducedByHours = apprenticeship.DurationReducedByHours;
+            Rpl = apprenticeship.RecognisePriorLearning;
             
             ViewData[ApprenticePortal.SharedUi.ViewDataKeys.MenuWelcomeText] = $"Welcome, {User.FullName()}";
         }
