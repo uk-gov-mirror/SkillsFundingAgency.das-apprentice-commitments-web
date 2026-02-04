@@ -6,6 +6,7 @@ using SFA.DAS.ApprenticePortal.Authentication;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Configuration;
 using SFA.DAS.ApprenticePortal.SharedUi.Menu;
+using SFA.DAS.ApprenticeCommitments.Web.Helpers;
 
 namespace SFA.DAS.ApprenticeCommitments.Web.Startup
 {
@@ -57,6 +58,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Startup
             );
             services.AddControllersWithViews();
             services.AddScoped<AuthenticatedUser>();
+            services.AddScoped<IApprenticeContext, ApprenticeContext>();
             services.AddTransient((_) => config);
         }
 
@@ -76,6 +78,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Startup
             services.AddScoped(s => s
                 .GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new());
             services.AddHttpContextAccessor();
+            services.AddScoped<IApprenticeContext, ApprenticeContext>();
             return services;
         }
     }

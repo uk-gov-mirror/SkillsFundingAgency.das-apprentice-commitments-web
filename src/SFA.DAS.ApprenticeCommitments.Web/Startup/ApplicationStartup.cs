@@ -60,6 +60,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Startup
                 options.SetUseGovSignIn(appConfig.UseGovSignIn);
             });
 
+            services.AddSession();
             services.AddRazorPages();
             services.AddMvc();
         }
@@ -81,6 +82,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Startup
                 .UseRouting()
                 .UseMiddleware<SecurityHeadersMiddleware>()
                 .UseAuthentication()
+                .UseSession()
                 .UseAuthorization()
                 .UseEndpoints(endpoints =>
                 {
