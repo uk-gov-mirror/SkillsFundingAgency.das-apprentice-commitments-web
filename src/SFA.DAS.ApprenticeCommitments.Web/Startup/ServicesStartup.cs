@@ -23,6 +23,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Startup
             services.AddScoped<ITimeProvider, UtcTimeProvider>();
             services.AddTransient<IMenuVisibility, MenuVisibility>();
             services.AddDomainHelper(environment);
+            services.AddTransient<HandleDuplicateApprenticeAccounts>();
 
             return services;
         }
