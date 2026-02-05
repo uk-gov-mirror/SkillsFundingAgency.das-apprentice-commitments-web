@@ -10,6 +10,7 @@ using System.Net;
 using SFA.DAS.ApprenticePortal.Authentication;
 using SFA.DAS.Encoding;
 using SFA.DAS.GovUK.Auth.Services;
+using System;
 
 namespace SFA.DAS.ApprenticeCommitments.Web.Startup
 {
@@ -60,7 +61,19 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Startup
                 options.SetUseGovSignIn(appConfig.UseGovSignIn);
             });
 
-            services.AddSession();
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = appConfig.ConnectionStrings.RedisConnectionString;
+                options.InstanceName = "ApprenticeshipConfirmSession:";
+            });
+
+            services.AddSession(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+            });
+
             services.AddRazorPages();
             services.AddMvc();
         }
