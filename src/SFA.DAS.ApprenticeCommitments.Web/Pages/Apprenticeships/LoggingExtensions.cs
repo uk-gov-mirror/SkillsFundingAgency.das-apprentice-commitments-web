@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
 {
-    public static class LoggeingExtensions
+    public static class LoggingExtensions
     {
         public static IDisposable BeginPropertyScope(
             this ILogger logger,

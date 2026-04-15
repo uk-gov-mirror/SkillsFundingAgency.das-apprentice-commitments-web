@@ -7,26 +7,23 @@ using SFA.DAS.ApprenticeCommitments.Web.Services;
 using SFA.DAS.ApprenticeCommitments.Web.Services.OuterApi;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.JsonPatch;
 using SFA.DAS.ApprenticePortal.Authentication;
 using SFA.DAS.ApprenticePortal.SharedUi.Filters;
+using ApprenticeshipConfirmationRequest = SFA.DAS.ApprenticeCommitments.Web.Services.OuterApi.ApprenticeshipConfirmationRequest;
 
 namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
 {
-    public enum ConfirmStatus
-    {
-        SectionsIncomplete,
-        SectionsComplete,
-        ApprenticeshipComplete,
-        Stopped
-    }
+
 
     [RequiresIdentityConfirmed]
-    public class ConfirmApprenticeshipModel : PageModel
+    public class TermsModel : PageModel
     {
         private readonly IOuterApiClient _client;
         private readonly AuthenticatedUser _authenticatedUser;
         private readonly ITimeProvider _time;
-        private readonly ILogger<ConfirmApprenticeshipModel> _logger;
+        private readonly ILogger<TermsModel> _logger;
+        private readonly ApprenticeApi _apprentices;
 
         [BindProperty(SupportsGet = true)]
         public HashedId ApprenticeshipId { get; set; }
@@ -43,6 +40,56 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
         public bool? ApprenticeshipDetailsConfirmation { get; set; } = null;
         public bool? RolesAndResponsibilitiesConfirmation { get; set; } = null;
         public bool? HowApprenticeshipWillBeDeliveredConfirmation { get; set; } = null;
+        
+        
+
+        [BindProperty]
+        public string CourseName { get; set; } = null!;
+
+        [BindProperty]
+        public int CourseLevel { get; set; }
+        
+        [BindProperty]
+        public string? CourseOption { get; set; }        
+
+        [BindProperty]
+        public int? ApprenticeshipType { get; set; }
+
+        [BindProperty]
+        public int CourseDuration { get; set; }
+
+        [BindProperty]
+        public DateTime PlannedStartDate { get; set; }
+
+        [BindProperty]
+        public DateTime PlannedEndDate { get; set; }
+
+        [BindProperty]
+        public DateTime? EmploymentEndDate { get; set; }
+
+        [BindProperty]
+        public bool? RecognisePriorLearning { get; set; }       
+        
+        [BindProperty]
+        public string EmployerName { get; set; } = null!;
+
+        [BindProperty]
+        public string TrainingProviderName { get; set; } = null!;
+        
+        
+        [BindProperty]
+        public int? DurationReducedByHours { get; set; }       
+        
+        [BindProperty]
+        public int? DurationReducedBy { get; set; } = null!; 
+        
+        
+        [BindProperty]
+        public string? FirstName { get; set; } = null!;         
+        
+        [BindProperty]
+        public string? LastName { get; set; } = null!;         
+
 
         public ChangeOfCircumstanceNotifications ChangeNotifications { get; set; }
         public bool ShowChangeNotification => ChangeNotifications != ChangeOfCircumstanceNotifications.None;
@@ -58,20 +105,15 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
             return String.Empty;
         }
 
-        public bool ApprenticeshipConfirmed => Status == ConfirmStatus.ApprenticeshipComplete;
+        public string Forwardlink => $"/apprenticeships/{ApprenticeshipId.Hashed}/";
 
-        public bool AllConfirmed => Status == ConfirmStatus.SectionsComplete;
-
-        public ConfirmStatus Status { get; private set; }
-
-        public string Forwardlink => $"/apprenticeships/{ApprenticeshipId.Hashed}/transactioncomplete";
-
-        public ConfirmApprenticeshipModel(IOuterApiClient client, ITimeProvider time, AuthenticatedUser authenticatedUser, ILogger<ConfirmApprenticeshipModel> logger)
+        public TermsModel(IOuterApiClient client, ITimeProvider time, AuthenticatedUser authenticatedUser, ILogger<TermsModel> logger, ApprenticeApi _apprentices)
         {
             _client = client;
             _time = time;
             _authenticatedUser = authenticatedUser;
             _logger = logger;
+            this._apprentices = _apprentices;
         }
 
         public async Task OnGetAsync()
@@ -89,8 +131,14 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
 
             var apprenticeship = await _client
                 .GetApprenticeship(_authenticatedUser.ApprenticeId, ApprenticeshipId.Id);
+            
+            var apprentice = await _apprentices.TryGetApprentice(_authenticatedUser.ApprenticeId);
 
-            Status = ConfirmationStatus(apprenticeship);
+            FirstName = apprentice?.FirstName; 
+            LastName = apprentice?.LastName; 
+            
+            
+   
             DaysRemaining = CalculateDaysRemaining(apprenticeship);
 
             RevisionId = apprenticeship.RevisionId;
@@ -101,34 +149,27 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
             HowApprenticeshipWillBeDeliveredConfirmation = apprenticeship.HowApprenticeshipDeliveredCorrect;
             ChangeNotifications = apprenticeship.ChangeOfCircumstanceNotifications;
             DisplayedApprenticeship = apprenticeship;
-
+            EmployerName = apprenticeship.EmployerName;
+            TrainingProviderName = apprenticeship.TrainingProviderName;
+            
+            CourseName = apprenticeship.CourseName;
+            CourseLevel = apprenticeship.CourseLevel;
+            CourseOption = apprenticeship.CourseOption;
+            CourseDuration = apprenticeship.CourseDuration;
+            PlannedStartDate = apprenticeship.PlannedStartDate;
+            PlannedEndDate = apprenticeship.PlannedEndDate;
+            EmploymentEndDate = apprenticeship.EmploymentEndDate;
+            RecognisePriorLearning = apprenticeship.RecognisePriorLearning;
+            ApprenticeshipType = apprenticeship.ApprenticeshipType;   
+            
+            DurationReducedBy = apprenticeship.DurationReducedBy;
+            DurationReducedByHours = apprenticeship.DurationReducedByHours;
+        
+            
             ViewData[ApprenticePortal.SharedUi.ViewDataKeys.MenuWelcomeText] = $"Welcome, {User.FullName()}";
         }
 
-        private ConfirmStatus ConfirmationStatus(Apprenticeship apprenticeship)
-        {
-            if (apprenticeship.IsStopped)
-            {
-                return ConfirmStatus.Stopped;
-            }
-            else if (apprenticeship.ConfirmedOn.HasValue)
-            {
-                return ConfirmStatus.ApprenticeshipComplete;
-            }
-            else if (
-                apprenticeship.EmployerCorrect == true &&
-                apprenticeship.TrainingProviderCorrect == true &&
-                apprenticeship.ApprenticeshipDetailsCorrect == true &&
-                apprenticeship.RolesAndResponsibilitiesConfirmations.IsConfirmed() &&
-                apprenticeship.HowApprenticeshipDeliveredCorrect == true)
-            {
-                return ConfirmStatus.SectionsComplete;
-            }
-            else
-            {
-                return ConfirmStatus.SectionsIncomplete;
-            }
-        }
+      
 
         private int CalculateDaysRemaining(Apprenticeship apprenticeship)
         {
@@ -146,21 +187,33 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
             var apprenticeship = await _client
                 .GetApprenticeship(_authenticatedUser.ApprenticeId, ApprenticeshipId.Id);
 
-            if(ConfirmationStatus(apprenticeship) != ConfirmStatus.SectionsComplete)
-            {
-                ModelState.TryAddModelError("ConfirmYourApprenticeship", "You must complete all the previous sections before you can confirm your apprenticeship.");
-                await PopulatePage();
-                return Page();
-            }
-
+            RevisionId = apprenticeship.RevisionId;
+            
+            
+            await _client.ConfirmApprenticeship(
+                _authenticatedUser.ApprenticeId, ApprenticeshipId.Id, RevisionId,
+                new ApprenticeshipConfirmationRequest()
+                {
+                    TrainingProviderCorrect = true,
+                    EmployerCorrect = true,
+                    ApprenticeshipCorrect = true,
+                    ApprenticeshipDetailsCorrect = true,
+                    HowApprenticeshipDeliveredCorrect = true,
+                    RolesAndResponsibilitiesConfirmations = RolesAndResponsibilitiesConfirmations.All
+                });
+            
+            // confirm it
             await _client.ConfirmApprenticeship(
                 _authenticatedUser.ApprenticeId, ApprenticeshipId.Id, RevisionId,
                 new ApprenticeshipConfirmationRequest(true));
-
+            
+            
             return Redirect(Forwardlink);
         }
 
         public string Pluralise(int number, string singular) =>
             $"{number} {singular}{(number == 1 ? "" : "s")}";
+        
     }
+    
 }
