@@ -30,6 +30,9 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Services.OuterApi
 
         [Get("/apprentices/{id}")]
         Task<Apprentice> GetApprentice([Path] Guid id);
+
+        [Patch("/apprentices/{id}")]
+        Task UpdateApprentice([Path] Guid id, [Body] JsonPatchDocument<Apprentice> patch);
         
         [Put("/apprentices")]
         Task<Apprentice> PutApprentice([Body] PutApprenticeAccount request);

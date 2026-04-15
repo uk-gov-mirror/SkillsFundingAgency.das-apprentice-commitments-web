@@ -1,4 +1,4 @@
-@page "/apprenticeships/{apprenticeshipId}/terms"
+@page 
 @model SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships.TermsModel
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using SFA.DAS.ApprenticeCommitments.Web.Helpers
@@ -81,7 +81,7 @@
                 <div class="govuk-form-group">
                     <div class="govuk-checkboxes">
                         <div class="govuk-checkboxes__item">
-                            <input class="govuk-checkboxes__input" id="accept-terms" name="accept-terms" type="checkbox" value="accepted" onchange="document.getElementById('continue-button').disabled = !this.checked;">
+                            <input class="govuk-checkboxes__input" asp-for="TermsOfUseAccepted" id="accept-terms" name="accept-terms" type="checkbox" value="accepted" onchange="document.getElementById('continue-button').disabled = !this.checked;">
                             <label class="govuk-label govuk-checkboxes__label" for="accept-terms">
                                 I accept the terms and conditions and consent to the use of cookies
                             </label>

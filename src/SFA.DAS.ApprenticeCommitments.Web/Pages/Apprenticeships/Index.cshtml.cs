@@ -1,37 +1,31 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using SFA.DAS.ApprenticeCommitments.Web.Models;
 using SFA.DAS.ApprenticeCommitments.Web.Services;
 using SFA.DAS.ApprenticeCommitments.Web.Services.OuterApi;
 using SFA.DAS.ApprenticePortal.Authentication;
-using SFA.DAS.ApprenticePortal.SharedUi.Filters;
 using SFA.DAS.ApprenticePortal.SharedUi.Menu;
 using SFA.DAS.Encoding;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
 {
-    [RequiresIdentityConfirmed]
+    //[RequiresIdentityConfirmed]
     public class ApprenticeshipIndexModel : PageModel
     {
         private readonly ApprenticeApi _client;
-        private readonly IOuterApiClient _outerApiClient;
-        private readonly IEncodingService _hashing;
+        private readonly IOuterApiClient _outerApiClient;        
         private readonly ILogger<ApprenticeshipIndexModel> _logger;
         private readonly NavigationUrlHelper _urlHelper;
         private readonly CommitmentsService _commitmentsService;
 
-        public ApprenticeshipIndexModel(ApprenticeApi client, IOuterApiClient outerApiClient, IEncodingService hashing, ILogger<ApprenticeshipIndexModel> logger, NavigationUrlHelper urlHelper, CommitmentsService commitmentsService)
+        public ApprenticeshipIndexModel(ApprenticeApi client, IOuterApiClient outerApiClient, ILogger<ApprenticeshipIndexModel> logger, NavigationUrlHelper urlHelper, CommitmentsService commitmentsService)
         {
             _client = client;
-            _outerApiClient = outerApiClient;
-            _hashing = hashing;
+            _outerApiClient = outerApiClient;            
             _logger = logger;
             _urlHelper = urlHelper;
             _commitmentsService = commitmentsService;
@@ -39,6 +33,13 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
 
         public async Task<IActionResult> OnGet([FromServices] AuthenticatedUser user)
         {
+            var apprentice = await _outerApiClient.GetApprentice(user.ApprenticeId);
+            if (!apprentice.TermsOfUseAccepted)
+            {
+                _logger.LogInformation("User has not accepted terms of use, redirecting to terms of use page");
+                return RedirectToPage("Terms");
+            }
+
             return await RedirectToLatestApprenticeship(user);
         }
 
@@ -52,7 +53,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
                     return RedirectToAction("Register", "Registration", registrationCode);
                 }
 
-                var email = user.Email?.Address;
+                var email = user.Email?.Address;                
                 
                 // Gets Revision
                 var revision = await _client.TryGetApprenticeships(user.ApprenticeId);                

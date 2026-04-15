@@ -15,8 +15,7 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.ApprenticeCommitments.Web.Pages
 {
-    [HideNavigationBar]
-    [RequiresIdentityConfirmed]
+    [HideNavigationBar]    
     public class CheckYourDetails : PageModel
     {
         private readonly ApprenticeApi _apprentices;
@@ -89,10 +88,14 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages
                     return RedirectToPage("AccountNotFound");
 
                 // Update Apprentice Account if needed for firstname, lastname and dateOfBirth
+                await _commitmentsService.EnsureApprenticeHasBasicFields(user.ApprenticeId, firstName, lastName, dateOfBirth);
 
+                var apprentice = await _outerApiClient.GetApprentice(user.ApprenticeId);
+                await AuthenticationEvents.UserAccountCreated(HttpContext, apprentice);
+
+                // Will return to Uln Page
                 if (registrations.Count >= 2)
-                {
-                    // Will return to Uln Page                    
+                {                    
                     var state = new CheckUlnState
                     {
                         ApprenticeshipIds = registrations.Select(x => x.CommitmentsApprenticeshipId).ToList(),

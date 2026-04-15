@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.JsonPatch;
 using SFA.DAS.ApprenticeCommitments.Web.Models;
-using SFA.DAS.ApprenticeCommitments.Web.Pages;
 using SFA.DAS.ApprenticeCommitments.Web.Services.OuterApi;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace SFA.DAS.ApprenticeCommitments.Web.Services
 {
@@ -62,6 +61,36 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Services
             var revision = await _outerApiClient.GetApprenticeship(apprenticeId, registration.ApprenticeshipId);
 
             return revision;
+        }
+
+        public async Task EnsureApprenticeHasBasicFields(Guid apprenticeId, string firstName, string lastName, DateTime dateOfBirth)
+        {
+            var apprentice = await _outerApiClient.GetApprentice(apprenticeId);
+
+            if (apprentice == null) return;
+
+            var needsPatch =
+                !string.Equals(apprentice.FirstName, firstName, StringComparison.OrdinalIgnoreCase) ||
+                !string.Equals(apprentice.LastName, lastName, StringComparison.OrdinalIgnoreCase) ||
+                apprentice.DateOfBirth != dateOfBirth;
+
+            if (!needsPatch) return;
+
+            var patchDoc = new JsonPatchDocument<Apprentice>();
+
+            if (!string.Equals(apprentice.FirstName, firstName, StringComparison.OrdinalIgnoreCase))
+                patchDoc.Replace(x => x.FirstName, firstName);
+
+            if (!string.Equals(apprentice.LastName, lastName, StringComparison.OrdinalIgnoreCase))
+                patchDoc.Replace(x => x.LastName, lastName);
+
+            if (apprentice.DateOfBirth != dateOfBirth)
+                patchDoc.Replace(x => x.DateOfBirth, dateOfBirth);
+
+            if (patchDoc.Operations.Any())
+            {
+                await _outerApiClient.UpdateApprentice(apprenticeId, patchDoc);
+            }
         }
     }
 }
