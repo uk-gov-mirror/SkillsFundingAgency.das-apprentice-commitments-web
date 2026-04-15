@@ -1,0 +1,38 @@
+﻿@page
+@model SFA.DAS.ApprenticeCommitments.Web.Pages.CheckUlnModel
+@{
+}
+
+<h2 class="govuk-heading-xl">More details needed to find your apprenticeship</h2>
+
+<p class="govuk-body">
+    We can match you to your apprenticeship using your unique learner number
+    (ULN). You should be able to find this on your certificates or exam results.
+    Or, you can ask your training provider.
+</p>
+
+<form method="post">
+    @for(int i = 0; i < Model.ApprenticeshipIds.Count; i++)
+    {
+        <input type="hidden" asp-for="@Model.ApprenticeshipIds[i]" />
+    }
+
+    @for (int i = 0; i < Model.RegistrationIds.Count; i++)
+    {
+        <input type="hidden" asp-for="@Model.RegistrationIds[i]" />
+    }
+
+    <div class="govuk-form-group">
+        <label asp-for="Uln" class="govuk-label">Your ULN</label>
+        <div class="govuk-hint">Your ULN is 10 digits and only numbers, for example '1234567890'</div>
+        <input asp-for="Uln" required class="govuk-input" />
+    </div>
+
+    <p class="govuk-body">
+        <a asp-action="AccountNotFound" asp-controller="Account" class="govuk-link govuk-link--no-visited-state">I do not know my ULN</a>
+    </p>
+
+    <div class="govuk-button-group">
+        <button class="govuk-button" type="submit">Continue</button>
+    </div>
+</form>

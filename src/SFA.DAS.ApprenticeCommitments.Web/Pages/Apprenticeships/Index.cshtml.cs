@@ -1,12 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using SFA.DAS.ApprenticeCommitments.Web.Models;
 using SFA.DAS.ApprenticeCommitments.Web.Services;
-using System.Threading.Tasks;
+using SFA.DAS.ApprenticeCommitments.Web.Services.OuterApi;
 using SFA.DAS.ApprenticePortal.Authentication;
 using SFA.DAS.ApprenticePortal.SharedUi.Filters;
 using SFA.DAS.ApprenticePortal.SharedUi.Menu;
 using SFA.DAS.Encoding;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
 {
@@ -14,16 +21,20 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
     public class ApprenticeshipIndexModel : PageModel
     {
         private readonly ApprenticeApi _client;
+        private readonly IOuterApiClient _outerApiClient;
         private readonly IEncodingService _hashing;
         private readonly ILogger<ApprenticeshipIndexModel> _logger;
         private readonly NavigationUrlHelper _urlHelper;
+        private readonly CommitmentsService _commitmentsService;
 
-        public ApprenticeshipIndexModel(ApprenticeApi client, IEncodingService hashing, ILogger<ApprenticeshipIndexModel> logger, NavigationUrlHelper urlHelper)
+        public ApprenticeshipIndexModel(ApprenticeApi client, IOuterApiClient outerApiClient, IEncodingService hashing, ILogger<ApprenticeshipIndexModel> logger, NavigationUrlHelper urlHelper, CommitmentsService commitmentsService)
         {
             _client = client;
+            _outerApiClient = outerApiClient;
             _hashing = hashing;
             _logger = logger;
             _urlHelper = urlHelper;
+            _commitmentsService = commitmentsService;
         }
 
         public async Task<IActionResult> OnGet([FromServices] AuthenticatedUser user)
@@ -41,21 +52,81 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
                     return RedirectToAction("Register", "Registration", registrationCode);
                 }
 
-                var apprenticeship = await _client.TryGetApprenticeships(user.ApprenticeId);
-                if (apprenticeship == null) return Redirect(_urlHelper.Generate(NavigationSection.PersonalDetails));
+                var email = user.Email?.Address;
+                
+                // Gets Revision
+                var revision = await _client.TryGetApprenticeships(user.ApprenticeId);                
 
-                if (apprenticeship.Apprenticeships.Count == 0)
-                    return RedirectToPage("/CheckYourDetails");
-
-                var firstApprenticeship = apprenticeship.Apprenticeships[0];
-                var apprenticeshipId = _hashing.Encode(firstApprenticeship.Id, EncodingType.ApprenticeshipId);
-
-                if (firstApprenticeship.IsStopped || firstApprenticeship.ConfirmedOn == null)
+                if (!string.IsNullOrWhiteSpace(email))
                 {
-                    return RedirectToPage("Confirm", new { apprenticeshipId });
+                    try
+                    {
+                        if (revision == null || revision.Apprenticeships.Count == 0)
+                        {
+                            // First Time User - First Time Login
+                            return await HandleRegistration(email, user.ApprenticeId);
+                        }
+
+                        if (revision != null && revision.Apprenticeships.Count > 0)
+                        {                            
+                            for (int i = 0; i < revision.Apprenticeships.Count; i++)
+                            {
+                                var apprenticeship = revision.Apprenticeships[i];                                                       
+
+                                if (!apprenticeship.IsStopped && apprenticeship.ConfirmedOn == null && apprenticeship.PlannedEndDate >= DateTime.Now)
+                                {
+                                    return await HandleRegistration(email, user.ApprenticeId);
+                                }
+
+                                if (!apprenticeship.IsStopped && apprenticeship.ConfirmedOn != null)
+                                {
+                                    _logger.LogInformation("User has a confirmed apprenticeship, granting access | {RevisionId}", apprenticeship.RevisionId);
+                                    return Redirect(_urlHelper.Generate(NavigationSection.Home, "Home"));
+                                }
+
+                                continue;
+                            }
+                            
+                            _logger.LogInformation("User has a no active Apprenticeships, Sending to check registration | {RevisionIds}",
+                                string.Join(",", revision.Apprenticeships.Select(x => x.Id)));
+                            return await HandleRegistration(email, user.ApprenticeId);
+                        }
+
+                        return RedirectToPage("AccountNotFound");
+
+                    } catch (Exception ex)
+                    {
+                        _logger.LogInformation("Email does not match any registration record | {ex}", ex);
+                        return RedirectToPage("/CheckYourDetails");
+                    }                    
                 }
-                return RedirectToPage("View", new { apprenticeshipId });
+
+                return RedirectToPage("AccountNotFound");
             }
         }
+
+        private async Task<IActionResult> HandleRegistration(string email, Guid apprenticeId)
+        {
+            try
+            {
+                var registrationByEmail = await _outerApiClient.GetRegistrationsByEmail(email);
+
+                if (registrationByEmail.Count == 1)
+                {
+                    // Matches single record - send to confirmation page
+                    var registration = registrationByEmail[0];
+
+                    var model = await _commitmentsService.GenerateConfirmationModel(apprenticeId, registration.RegistrationId, registration.CommitmentsApprenticeshipId);
+                    TempData["ConfirmationModel"] = JsonSerializer.Serialize(model);
+                    return RedirectToPage("/ConfirmYourApprenticeship");
+                }
+            } catch (Exception ex)
+            {
+                _logger.LogInformation("Email does not match any registration record | {ex}", ex);
+                return RedirectToPage("/CheckYourDetails");
+            }
+
+            return RedirectToPage("/CheckYourDetails");
+        }       
     }
 }

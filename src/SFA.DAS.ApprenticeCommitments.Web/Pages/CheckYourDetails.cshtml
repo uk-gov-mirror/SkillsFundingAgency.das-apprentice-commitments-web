@@ -12,18 +12,56 @@
                 <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
                     There seems to be a problem, we cannot find your apprenticeship.
                 </h2>
-            </div>
-            <div class="govuk-notification-banner__content">
-                <p class="govuk-body">
-                    Check your name and date of birth.  If these are incorrect, please
-                    <a class="govuk-link govuk-link--no-visited-state" asp-external-section="ConfirmMyApprenticeship" asp-external-page="Account" asp-always-show=true>update your details</a>.
-                </p>
-            </div>
+            </div>         
         </div>
 
         <h1 class="govuk-heading-l">Check your details</h1>
 
-        <table class="govuk-table data-table">
+        <form method="POST">            
+            <div class="govuk-form-group">
+                <label asp-for="FirstName" class="govuk-label">First Name</label>
+                <input asp-for="FirstName" required class="govuk-input" />
+            </div>
+            <div class="govuk-form-group">
+                <label asp-for="LastName" class="govuk-label">Last Name</label>
+                <input asp-for="LastName" required class="govuk-input" />
+            </div>
+            <div id="DateOfBirth" class="govuk-form-group">
+                <div validation-row-status property-name="DateOfBirth">
+                    <fieldset class="govuk-fieldset" role="group" aria-describedby="date-of-birth-hint date-of-birth-error">
+                        <label class="govuk-label govuk-label--s" asp-for="DateOfBirth">Date of birth</label>
+                        <div class="govuk-hint" id="duedate-hint">For example, 26 05 2007</div>
+                        <span asp-validation-for="DateOfBirth" class="govuk-error-message"></span>
+                        <div class="govuk-date-input" id="date-of-birth">
+                            <div class="govuk-date-input__item">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label govuk-label govuk-date-input__label app-label" asp-for="DateOfBirth.Day">Day</label>
+                                    <input class="govuk-input govuk-date-input__input govuk-input--width-2 length-limit" asp-for="DateOfBirth.Day" type="text" autocomplete="bday-day" pattern="[0-9]*" inputmode="numeric" maxlength="2" min="1" max="31">
+                                </div>
+                            </div>
+                            <div class="govuk-date-input__item">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label govuk-label govuk-date-input__label app-label" asp-for="DateOfBirth.Month">Month</label>
+                                    <input class="govuk-input govuk-date-input__input govuk-input--width-2 length-limit" asp-for="DateOfBirth.Month" type="text" autocomplete="bday-month" pattern="[0-9]*" inputmode="numeric" maxlength="2" min="1" max="12">
+                                </div>
+                            </div>
+                            <div class="govuk-date-input__item">
+                                <div class="govuk-form-group">
+                                    <label class="govuk-label govuk-label govuk-date-input__label app-label" asp-for="DateOfBirth.Year">Year</label>
+                                    <input class="govuk-input govuk-date-input__input govuk-input--width-4 length-limit" asp-for="DateOfBirth.Year" type="text" autocomplete="bday-year" pattern="[0-9]*" inputmode="numeric" maxlength="4" min="1900" max="9999">
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="govuk-button-group">
+                <button class="govuk-button" type="submit">Continue</button>
+            </div>
+        </form>
+
+     @*    <table class="govuk-table data-table">
             <caption></caption>
             <tbody class="govuk-table__body">
                 <tr class="govuk-table__row">
@@ -39,11 +77,11 @@
                     <td class="govuk-table__cell">@(Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.ToString("d MMM yyyy") : "")</td>
                 </tr>
             </tbody>
-        </table>
+        </table> *@
 
-        <div class="govuk-inset-text">
+      @*   <div class="govuk-inset-text">
             If your details are correct and we cannot find your apprenticeship, contact your employer or training provider. You can still 
             <a class="govuk-link govuk-link--no-visited-state" asp-external-section="@ApprenticePortal.SharedUi.Menu.NavigationSection.ApprenticeAan" asp-always-show=true>join the Apprenticeship Ambassador Network</a>.
-        </div>
+        </div> *@
     </div>
 </div>
