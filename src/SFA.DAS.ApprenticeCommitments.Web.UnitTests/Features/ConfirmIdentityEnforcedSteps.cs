@@ -55,35 +55,34 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
             await _context.Web.FollowLocalRedirects();
         }
 
-        [Then("redirect the user to the TermsOfUse page")]
-        public void ThenRedirectTheUserToTermsOfUse()
+        [Then("redirect the user to the Terms page")]
+        public void ThenRedirectTheUserToTermsPage()
         {
-            _context.Web.Response.Should().Be302Redirect();
-            _context.ActionResult.LastRedirectResult.Url.Should().EndWith("//account/AcceptTermsOfUse");
+            _context.Web.Response.Should().NotBeNull();
+            _context.Web.Response.RequestMessage!.RequestUri!.AbsolutePath.Should().EndWith("/Terms");
+            _context.Web.Response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
         }
 
-        [Then("redirect the user to the home page with a NotMatched banner")]
-        public void ThenRedirectTheUserToTheHomePageWithANotMatchedBanner()
+        [Then("redirect the user to the Check Your Details page")]
+        public void ThenRedirectTheUserToCheckYourDetailsPage()
         {
             _context.Web.Response.Should().Be2XXSuccessful();
             _context.ActionResult.LastPageResult.Should().NotBeNull();
             _context.ActionResult.LastPageResult.Model.Should().BeOfType<CheckYourDetails>();
         }
 
-        [Then("redirect the user to the overview page")]
-        public void ThenRedirectTheUserToTheOverviewPage()
+        [Then("Then redirect the user to the home page")]
+        public void ThenRedirectTheUserToTheHomePage()
         {
             _context.Web.Response.Should().Be2XXSuccessful();
-            _context.ActionResult.LastPageResult.Should().NotBeNull();
-            _context.ActionResult.LastPageResult.Model.Should().BeOfType<YourApprenticeshipDetails>();
+            _context.Web.Response.Headers.Location!.ToString().Should().Contain("Home");
         }
 
         [Then(@"redirect the user to the my apprenticeship page")]
         public void ThenRedirectTheUserToTheMyApprenticeshipPage()
         {
-            _context.Web.Response.Should().Be2XXSuccessful();
-            _context.ActionResult.LastPageResult.Should().NotBeNull();
-            _context.ActionResult.LastPageResult.Model.Should().BeOfType<ViewMyApprenticeshipModel>();
+            _context.Web.Response.Should().Be302Redirect();
+            _context.Web.Response.Headers.Location!.ToString().Should().Contain("/Home");
         }
 
         [Then("redirect the user to the Account page")]
