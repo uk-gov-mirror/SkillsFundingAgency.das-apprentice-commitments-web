@@ -117,6 +117,17 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
                     // Matches single record - send to confirmation page
                     var registration = registrationByEmail[0];
 
+                    var firstName = registration.FirstName;
+                    var lastName = registration.LastName;
+
+                    if (firstName == null || lastName == null)
+                    {
+                        _logger.LogInformation("Registration record does not contain first name and last name | {RegistrationId}", registration.RegistrationId);
+                        return RedirectToPage("/CheckYourDetails");
+                    }
+
+                    await _commitmentsService.EnsureApprenticeHasBasicFields(apprenticeId, firstName, lastName, registration.DateOfBirth);
+
                     var model = await _commitmentsService.GenerateConfirmationModel(apprenticeId, registration.RegistrationId, registration.CommitmentsApprenticeshipId);
                     TempData["ConfirmationModel"] = JsonSerializer.Serialize(model);
                     return RedirectToPage("/ConfirmYourApprenticeship");
