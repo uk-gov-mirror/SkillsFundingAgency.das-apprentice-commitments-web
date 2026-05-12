@@ -12,7 +12,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Services.OuterApi
         [Get("/registrations/{id}")]
         Task<VerifyRegistrationResponse> GetRegistration([Path] Guid id);
 
-        [Get("/registration/{id}")]
+        [Get("/registration/registration-details/{id}")]
         Task<Registration> GetRegistrationById([Path] Guid id);
 
         [AllowAnyStatusCode]
