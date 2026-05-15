@@ -74,3 +74,15 @@
             Continue
         </button>
     </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const checkbox = document.getElementById('accept-terms');
+    const button = document.getElementById('continue-button');
+
+    button.disabled = true;
+    checkbox.addEventListener('change', function() {
+    button.disabled = !checkbox.checked;
+    });
+    });
+</script>
