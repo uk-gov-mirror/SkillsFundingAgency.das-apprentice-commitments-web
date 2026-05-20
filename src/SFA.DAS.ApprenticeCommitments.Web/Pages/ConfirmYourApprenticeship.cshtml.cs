@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.ApprenticeCommitments.Web.Pages
 {
-    [HideNavigationBar]
+    [HideNavigationBar]    
     public class ConfirmYourApprenticeshipModel : PageModel
     {
         private readonly IOuterApiClient _outerApiClient;

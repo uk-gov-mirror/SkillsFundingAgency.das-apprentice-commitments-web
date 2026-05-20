@@ -1,79 +1,82 @@
 ﻿@page
 @using SFA.DAS.ApprenticeCommitments.Web.Helpers
 @model SFA.DAS.ApprenticeCommitments.Web.Pages.ConfirmYourApprenticeshipModel
-@{
+@{    
 }
 
-<h2 class="govuk-heading-l">Check your apprenticeship details</h2>
+<h2 class="govuk-heading-xl">Check your apprenticeship details</h2>
 
-<table class="govuk-table data-table">
-    <tr class="govuk-summary-list__row">
-            <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Full name</td>
-            <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.FullName</td>
-        </tr>
-    <tr class="govuk-summary-list__row">
-            <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Current employer</td>
-            <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.EmployerName</td>
-        </tr>
-        <tr class="govuk-summary-list__row">
-            <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Training provider</td>
-            <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.TrainingProviderName</td>
-        </tr>
-        <tr class="govuk-summary-list__row">
-            <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Apprenticeship</td>
-            <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.CourseName</td>
-        </tr>
-        <tr class="govuk-summary-list__row">
-            <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Level</td>
-            <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.Level</td>
-        </tr>       
-        <tr class="govuk-summary-list__row">
-            <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Type</td>
-        <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Utilities.GetApprenticeshipTypeDescription(int.Parse(Model.Type))</td>
-        </tr>
-        @* <tr asp-show="Model.CourseOption != null" class="govuk-summary-list__row">
-            <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Option</th>
-            <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.CourseOption</td>
-        </tr> *@
-        <tr class="govuk-summary-list__row">
-            <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Planned training start date</td>
-            <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.StartDate</td>
-        </tr>
-        <tr class="govuk-summary-list__row">
-            <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Planned training end date</td>
-            <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.EndDate</td>
-        </tr>        
-    </tbody>
-</table>
+<main class="govuk-main-wrapper--autosspacing homepage" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <table class="govuk-table data-table">
+                <tbody>
+                    <tr class="govuk-summary-list__row">
+                        <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Full name</td>
+                        <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.FullName</td>
+                    </tr>
+                    <tr class="govuk-summary-list__row">
+                        <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Current employer</td>
+                        <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.EmployerName</td>
+                    </tr>
+                    <tr class="govuk-summary-list__row">
+                        <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Training provider</td>
+                        <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.TrainingProviderName</td>
+                    </tr>
+                    <tr class="govuk-summary-list__row">
+                        <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Apprenticeship</td>
+                        <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.CourseName</td>
+                    </tr>
+                    <tr class="govuk-summary-list__row">
+                        <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Level</td>
+                        <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.Level</td>
+                    </tr>
+                    <tr class="govuk-summary-list__row">
+                        <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Type</td>
+                        <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Utilities.GetApprenticeshipTypeDescription(int.Parse(Model.Type))</td>
+                    </tr>
+                    <tr class="govuk-summary-list__row">
+                        <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Planned training start date</td>
+                        <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.StartDate</td>
+                    </tr>
+                    <tr class="govuk-summary-list__row">
+                        <td scope="row" class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">Planned training end date</td>
+                        <td class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">@Model.EndDate</td>
+                    </tr>
+                </tbody>
+            </table>
 
-    <div class="govuk-inset-text">
-        <p class="govuk-body govuk-!-font-weight-bold">
-            Are any of your details wrong?
-        </p>
-        <p class="govuk-body">
-            If your training provider is wrong, tell your contact at @Model.EmployerName. If your employer or any other details are wrong, tell your contact at @Model.TrainingProviderName. They'll correct them and we'll email you when it's been done.
-        </p>
-    </div>
-
-    <form method="post">
-        <input type="hidden" asp-for="@Model.ApprenticeId" />
-        <input type="hidden" asp-for="@Model.ApprenticeshipId" />
-        <input type="hidden" asp-for="@Model.RevisionId" />
-        <div class="govuk-form-group">
-            <div class="govuk-checkboxes">
-                <div class="govuk-checkboxes__item">
-                    <input class="govuk-checkboxes__input" id="accept-terms" name="accept-terms" type="checkbox" value="accepted">
-                    <label class="govuk-label govuk-checkboxes__label" for="accept-terms">
-                        I confirm that my apprenticeship details are correct
-                    </label>
-                </div>
+            <div class="govuk-inset-text">
+                <p class="govuk-body govuk-!-font-weight-bold">
+                    Are any of your details wrong?
+                </p>
+                <p class="govuk-body">
+                    If your training provider is wrong, tell your contact at @Model.EmployerName. If your employer or any other details are wrong, tell your contact at @Model.TrainingProviderName. They'll correct them and we'll email you when it's been done.
+                </p>
             </div>
-        </div>
 
-        <button type="submit" class="govuk-button" data-module="govuk-button" asp-page-handler="Confirm" id="continue-button" disabled>
-            Continue
-        </button>
-    </form>
+            <form method="post">
+                <input type="hidden" asp-for="@Model.ApprenticeId" />
+                <input type="hidden" asp-for="@Model.ApprenticeshipId" />
+                <input type="hidden" asp-for="@Model.RevisionId" />
+                <div class="govuk-form-group">
+                    <div class="govuk-checkboxes">
+                        <div class="govuk-checkboxes__item">
+                            <input class="govuk-checkboxes__input" id="accept-terms" name="accept-terms" type="checkbox" value="accepted">
+                            <label class="govuk-label govuk-checkboxes__label" for="accept-terms">
+                                I confirm that my apprenticeship details are correct
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="govuk-button" data-module="govuk-button" asp-page-handler="Confirm" id="continue-button" disabled>
+                    Continue
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
