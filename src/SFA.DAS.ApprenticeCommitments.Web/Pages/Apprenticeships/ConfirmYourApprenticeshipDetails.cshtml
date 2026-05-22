@@ -1,288 +1,149 @@
-@page "/apprenticeships/{apprenticeshipId}/yourapprenticeshipdetails"
+@page "/apprenticeships/{apprenticeshipId}/checkyourapprenticeshipdetails"
 @using SFA.DAS.ApprenticeCommitments.Web.Helpers
-@using SFA.DAS.ApprenticeCommitments.Web.Services.OuterApi;
-@using SFA.DAS.ApprenticeCommitments.Web.Models;
 @model SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships.YourApprenticeshipDetails
 @{
-    ViewData["Title"] = "Confirm the details of your apprenticeship";
+    ViewData["Title"] = "Check your apprenticeship details";
 }
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">Check your apprenticeship details</h1>
 
-        <partial name="ValidationSummary" />
-
-        <h1 class="govuk-heading-l">Confirm the details of your @Model.DeliveryModel.AbnormalDisplayName()?.ToLower() apprenticeship</h1>
-
-        <notification-banner asp-hide="@Model.ShowForm">
-            You have confirmed these are the details of your apprenticeship
-        </notification-banner>
-
-        <notification-banner asp-show="@Model.ChangingAnswer">
-            You can now change your answer
-        </notification-banner>
-
-        @if (Model.DeliveryModel.Equals(DeliveryModel.Regular))
-        {
-            <p>These are the details that your employer and training provider have agreed with you and have passed on to us.</p>
-
-            <p>We need you to check and confirm these details are correct.</p>
-
-            <table class="govuk-table data-table">
-                <caption class="govuk-table__caption govuk-table__caption--m">Training details</caption>
-                <tbody class="govuk-table__body">
-                <tr class="govuk-table__row">
-                    <th scope="row" class="govuk-table__header">Apprenticeship</th>
-                    <td class="govuk-table__cell">@Model.CourseName</td>
-                </tr>
-                <tr class="govuk-table__row">
-                    <th scope="row" class="govuk-table__header">Level</th>
-                    <td class="govuk-table__cell">@Model.CourseLevel</td>
-                </tr>
-                @if (Utilities.IsValidApprenticeshipType(Model.ApprenticeshipType))
-                {
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Type</th>
-                        <td class="govuk-table__cell">@Utilities.GetApprenticeshipTypeDescription(Model.ApprenticeshipType)</td>
-                    </tr>
-                } 
-                <tr asp-show="Model.CourseOption != null" class="govuk-table__row">
-                    <th scope="row" class="govuk-table__header">Option</th>
-                    <td class="govuk-table__cell">@Model.CourseOption</td>
-                </tr>
-                <tr class="govuk-table__row">
-                    <th scope="row" class="govuk-table__header">Planned start date for training</th>
-                    <td class="govuk-table__cell">@Model.PlannedStartDate.ToString("MMMM yyyy")</td>
-                </tr>
-                <tr class="govuk-table__row">
-                    <th scope="row" class="govuk-table__header">Estimated duration</th>
-                    <td class="govuk-table__cell">@Model.CourseDuration months</td>
-                </tr>
-                </tbody>
-            </table>
-        }
-        @if (Model.DeliveryModel.Equals(DeliveryModel.PortableFlexiJob))
-        {
-            <p>These are the details that your current employer and your training provider have agreed with you and have passed on to us.</p>
-
-            <p>We need you to check and confirm these details are correct.</p>
-
-            <table class="govuk-table data-table">
-                <caption class="govuk-table__caption govuk-table__caption--m">Training details</caption>
-                <tbody class="govuk-table__body">
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Delivery model</th>
-                        <td class="govuk-table__cell">@Model.DeliveryModel.DisplayName()</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Apprenticeship</th>
-                        <td class="govuk-table__cell">@Model.CourseName</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Level</th>
-                        <td class="govuk-table__cell">@Model.CourseLevel</td>
-                    </tr>
-                    @if (Utilities.IsValidApprenticeshipType(Model.ApprenticeshipType))
-                    {
-                        <tr class="govuk-table__row">
-                            <th scope="row" class="govuk-table__header">Type</th>
-                            <td class="govuk-table__cell">@Utilities.GetApprenticeshipTypeDescription(Model.ApprenticeshipType)</td>
-                        </tr>
-                    }
-                    <tr asp-show="Model.CourseOption != null" class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Option</th>
-                        <td class="govuk-table__cell">@Model.CourseOption</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Planned training start date</th>
-                        <td class="govuk-table__cell">@Model.PlannedStartDate.ToString("MMMM yyyy")</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Planned training end date</th>
-                        <td class="govuk-table__cell">@Model.PlannedEndDate.ToString("MMMM yyyy")</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Job end date</th>
-                        <td class="govuk-table__cell">@Model.EmploymentEndDate?.ToString("MMMM yyyy")</td>
-                    </tr>
-                </tbody>
-            </table>
-        }
-        @if (Model.DeliveryModel.Equals(DeliveryModel.FlexiJobAgency))
-        {
-            <p>These are the details that your employer and training provider have agreed with you and have passed on to us.</p>
-
-            <p>We need you to check and confirm these details are correct.</p>
-
-            <table class="govuk-table data-table">
-                <caption class="govuk-table__caption govuk-table__caption--m">Training details</caption>
-                <tbody class="govuk-table__body">
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Delivery model</th>
-                        <td class="govuk-table__cell">@Model.DeliveryModel.DisplayName()</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Apprenticeship</th>
-                        <td class="govuk-table__cell">@Model.CourseName</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Level</th>
-                        <td class="govuk-table__cell">@Model.CourseLevel</td>
-                    </tr>
-                    @if (Utilities.IsValidApprenticeshipType(Model.ApprenticeshipType))
-                    {
-                        <tr class="govuk-table__row">
-                            <th scope="row" class="govuk-table__header">Type</th>
-                            <td class="govuk-table__cell">@Utilities.GetApprenticeshipTypeDescription(Model.ApprenticeshipType)</td>
-                        </tr>
-                    }
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Planned training start date</th>
-                        <td class="govuk-table__cell">@Model.PlannedStartDate.ToString("MMMM yyyy")</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Planned training end date</th>
-                        <td class="govuk-table__cell">@Model.PlannedEndDate.ToString("MMMM yyyy")</td>
-                    </tr>
-                </tbody>
-            </table>
-        }
-    
-        @if (Model.RecognisePriorLearning != null)
-        {
-            <div class="govuk-!-padding-bottom-2">
-                <h2 class="govuk-heading-m">Prior learning details</h2>
-
-                @if (Model.RecognisePriorLearning == true)
-                {
-                    <p>Based on your initial assessment with them, your training provider has informed us that <strong>you have relevant prior learning.</strong></p>
-                }
-
-                @if (Model.RecognisePriorLearning == false)
-                {
-                    <p>Based on your initial assessment with them, your training provider has informed us that <strong>you do not have relevant prior learning.</strong></p>
-                }
+        <dl class="govuk-summary-list govuk-!-margin-bottom-9">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                    Full name
+                </dt>
+                <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                    @Model.FirstName @Model.LastName
+                </dd>
             </div>
-        }
 
-        @if (Model.DeliveryModel.Equals(DeliveryModel.Regular))
-        {
-            <h2 class="govuk-heading-s">
-                Things you need to know
-            </h2>
-
-            <div class="govuk-inset-text">
-
-                <p>
-                    Your planned training start date and estimated duration should:
-                </p>
-
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>include the time you will spend in off-the-job training</li>
-                    <li>not include when your assessments will take place</li>
-                </ul>
-
-                <p>
-                    You should have had an initial assessment with your training provider and employer. During this assessment you might have agreed adjustments, if you have: 
-                </p>
-
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>relevant training, like an IT course</li>
-                    <li>a relevant qualification, like an NVQ in a relevant field</li>
-                    <li>experience in relevant industry or sector</li>
-                    <li>additional learning needs</li>
-                </ul>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                    Current employer
+                </dt>
+                <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                    @Model.EmployerName
+                </dd>
             </div>
-        }
 
-        @if (Model.DeliveryModel.Equals(DeliveryModel.PortableFlexiJob))
-        {
-
-            <h2 class="govuk-heading-s">
-                Things you need to know about a portable flexi-job apprenticeship
-            </h2>
-
-            <div class="govuk-inset-text">
-                <p>
-                    During your portable flexi-job apprenticeship, you will find different jobs and may move between employers.
-                    Each job will last a minimum of 3 months and you may return to the same employer multiple times throughout your apprenticeship.
-                </p>
-
-                <p>
-                    Your planned training start date and estimated duration should:
-                </p>
-
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>include the time you will spend in off-the-job training across all employers</li>
-                    <li>not include when your assessments will take place</li>
-                </ul>
-
-                <p>
-                    You should have had an initial assessment with your training provider and employer. During this assessment you might have agreed adjustments, if you have:
-                </p>
-
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>relevant training, like an IT course</li>
-                    <li>a relevant qualification, like an NVQ in a relevant field</li>
-                    <li>experience in relevant industry or sector</li>
-                    <li>additional learning needs</li>
-                </ul>
-            </div>                
-        }
-
-        @if (Model.DeliveryModel.Equals(DeliveryModel.FlexiJobAgency))
-        {
-            <h2 class="govuk-heading-s">
-                Things you need to know about a flexi-job agency apprenticeship
-            </h2>
-            <div class="govuk-inset-text">
-                <p>During your apprenticeship, you may move between different placements found by your employer.</p>
-
-                <p>Your planned training start date and estimated duration should:</p>
-
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>include the time you will spend in off-the-job training across all placements</li>
-                    <li>not include when your assessments will take place</li>
-                </ul>
-
-                <p>
-                    You should have had an initial assessment with your training provider and employer. During this assessment you might have agreed adjustments, if you have: 
-                </p>
-
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>relevant training, like an IT course</li>
-                    <li>a relevant qualification, like an NVQ in a relevant field</li>
-                    <li>experience in relevant industry or sector</li>
-                    <li>additional learning needs</li>
-                </ul>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                    Training provider
+                </dt>
+                <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                    @Model.TrainingProviderName
+                </dd>
             </div>
-        }
 
-        <form asp-show="@Model.ShowForm" method="post">
-            <yes-no-wrapper property-name="Confirmed">
-                <yes-no-header>
-                    Are your apprenticeship details correct?
-                </yes-no-header>
-                <span asp-validation-for="Confirmed" class="govuk-error-message"></span>
-                <yes-no-inputs asp-for="Confirmed"></yes-no-inputs>
-            </yes-no-wrapper>
-            <button class="govuk-button" data-module="govuk-button" id="employer-provider-confirm">Confirm</button>
-            <input type="hidden" asp-for="RevisionId" value="@Model.RevisionId" />
-            <input type="hidden" name="CourseName" value="@Model.CourseName" />
-            <input type="hidden" name="CourseLevel" value="@Model.CourseLevel" />
-            <input type="hidden" name="CourseOption" value="@Model.CourseOption" />
-            <input type="hidden" name="CourseDuration" value="@Model.CourseDuration" />
-            <input type="hidden" name="PlannedStartDate" value="@Model.PlannedStartDate" />
-            <input type="hidden" name="PlannedEndDate" value="@Model.PlannedEndDate" />
-            <input type="hidden" name="EmploymentEndDate" value="@Model.EmploymentEndDate" />
-            <input type="hidden" name="RecognisePriorLearning" value="@Model.RecognisePriorLearning" />
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                    Apprenticeship
+                </dt>
+                <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                    @Model.CourseName
+                </dd>
+            </div>
+
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                    Level
+                </dt>
+                <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                    @Model.CourseLevel
+                </dd>
+            </div>
+
+            @if (Utilities.IsValidApprenticeshipType(Model.ApprenticeshipType))
+            {
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        Type
+                    </dt>
+                    <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        @Utilities.GetApprenticeshipTypeDescription(Model.ApprenticeshipType)
+                    </dd>
+                </div>
+            }
+
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                    Planned training start date
+                </dt>
+                <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                    @Model.PlannedStartDate.ToString("MMMM yyyy")
+                </dd>
+            </div>
+
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                    Planned training end date
+                </dt>
+                <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                    @Model.PlannedEndDate.ToString("MMMM yyyy")
+                </dd>
+            </div>
+          
+            @if (Model.Rpl.HasValue && Model.Rpl.Value)
+            {
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        Reduction in apprenticeship duration due to your prior learning
+                    </dt>
+                    <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        @Model.DurationReducedBy weeks
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        Training reduction due to your prior learning
+                    </dt>
+                    <dd class="govuk-summary-list__value govuk-!-width-one-half govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+                        @Model.DurationReducedByHours hours
+                    </dd>
+                </div>
+            }
+
+        </dl>
+
+        <div class="govuk-inset-text">
+            <p class="govuk-body govuk-!-font-weight-bold">
+                Are any of your details wrong?
+            </p>
+            <p class="govuk-body">
+                If your training provider is wrong, tell your contact at @Model.EmployerName. If your employer or any other details are wrong, tell your contact at @Model.TrainingProviderName. They'll correct them and we'll email you when it's been done.
+            </p>
+        </div>
+
+        <form method="post">
+            <div class="govuk-form-group">
+                <div class="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" id="accept-terms" name="accept-terms" type="checkbox" value="accepted">
+                        <label class="govuk-label govuk-checkboxes__label" for="accept-terms">
+                            I confirm that my apprenticeship details are correct
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="govuk-button" data-module="govuk-button" asp-page-handler="Confirm" id="continue-button" disabled>
+                Continue
+            </button>
         </form>
 
-        <form asp-hide="@Model.ShowForm" action="@Model.Backlink">
-            <button class="govuk-button">Continue</button>
-        </form>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const checkbox = document.getElementById('accept-terms');
+                const button = document.getElementById('continue-button');
 
-        <a class="govuk-link" asp-show="@Model.CanChangeAnswer" asp-page-handler="changeAnswer">I want to change my answer</a>
-
+                button.disabled = true;
+                checkbox.addEventListener('change', function() {
+                    button.disabled = !checkbox.checked;
+                });
+            });
+        </script>
     </div>
 </div>

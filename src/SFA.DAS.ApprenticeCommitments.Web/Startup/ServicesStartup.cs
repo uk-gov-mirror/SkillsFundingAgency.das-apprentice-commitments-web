@@ -18,6 +18,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Startup
             IWebHostEnvironment environment)
         {
             services.AddTransient<ApprenticeApi>();
+            services.AddTransient<CommitmentsService>();
             services.AddTransient<AuthenticatedUserClient>();
             services.AddTransient<ISimpleUrlHelper, AspNetCoreSimpleUrlHelper>();
             services.AddScoped<ITimeProvider, UtcTimeProvider>();

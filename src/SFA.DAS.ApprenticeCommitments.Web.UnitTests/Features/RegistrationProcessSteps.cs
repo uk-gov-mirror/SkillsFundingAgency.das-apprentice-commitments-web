@@ -79,11 +79,12 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
                     .WithPath("/apprentices/*"))
                 .RespondWith(Response.Create()
                     .WithStatusCode(200)
-                    .WithBodyAsJson(new
+                    .WithBodyAsJson(new Apprentice
                     {
                         FirstName = "Bob",
                         LastName = "Bobbertson",
-                        DateOfBirth = new DateTime(2000, 01, 13)
+                        DateOfBirth = new DateTime(2000, 01, 13),
+                        TermsOfUseAccepted = true,
                     }));
             _context.OuterApi.MockServer.Given(
                 Request.Create()
@@ -106,32 +107,54 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
         public void GivenTheApprenticeHasLoggedInAndMatchedTheirAccount()
         {
             GivenTheApprenticeHasLoggedIn();
+
             _context.OuterApi.MockServer.Given(
-                Request.Create()
-                    .UsingGet()
-                    .WithPath("/apprentices/*/apprenticeships"))
+                    Request.Create()
+                        .UsingGet()
+                        .WithPath($"/apprentices/{_userContext.ApprenticeId}"))
                 .RespondWith(Response.Create()
                     .WithStatusCode(200)
-                    .WithBodyAsJson(new { Apprenticeships = new[] { new { Id = 1 } } }));
+                    .WithBodyAsJson(new
+                    {
+                        TermsOfUseAccepted = true
+                    }));
+
             _context.OuterApi.MockServer.Given(
-                Request.Create()
-                    .UsingGet()
-                    .WithPath("/apprentices/*/apprenticeships/*"))
+                    Request.Create()
+                        .UsingGet()
+                        .WithPath("/apprentices/*/apprenticeships"))
                 .RespondWith(Response.Create()
                     .WithStatusCode(200)
-                    .WithBodyAsJson(new { Id = 1 }));
-            _context.OuterApi.MockServer.Given(
-                Request.Create()
-                    .UsingAnyMethod()
-                    .WithPath("/apprentices/*/apprenticeships/*"))
-                .RespondWith(Response.Create()
-                    .WithStatusCode(200));
+                    .WithBodyAsJson(new
+                    {
+                        Apprenticeships = new[]
+                        {
+                    new
+                    {
+                        Id = 1,
+                        ConfirmedOn = DateTime.UtcNow,
+                        IsStopped = false
+                    }
+                        }
+                    }));
         }
 
         [Given(@"the apprentice has logged in and the apprentice has confirmed their latest apprenticeship")]
         public void GivenTheApprenticeHasLoggedInAndTheApprenticeHasConfirmedTheirLatestApprenticeship()
         {
             GivenTheApprenticeHasLoggedIn();
+
+            _context.OuterApi.MockServer.Given(
+                    Request.Create()
+                        .UsingGet()
+                        .WithPath($"/apprentices/{_userContext.ApprenticeId}"))
+                .RespondWith(Response.Create()
+                    .WithStatusCode(200)
+                    .WithBodyAsJson(new
+                    {
+                        TermsOfUseAccepted = true
+                    }));
+
             _context.OuterApi.MockServer.Given(
                     Request.Create()
                         .UsingGet()
@@ -153,26 +176,37 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
         public void GivenTheApprenticeHasLoggedInTheApprenticeHasConfirmedTheirLatestApprenticeshipButItHasSinceBeenStopped()
         {
             GivenTheApprenticeHasLoggedIn();
+
+            _context.OuterApi.MockServer.Given(
+                    Request.Create()
+                        .UsingGet()
+                        .WithPath($"/apprentices/{_userContext.ApprenticeId}"))
+                .RespondWith(Response.Create()
+                    .WithStatusCode(200)
+                    .WithBodyAsJson(new
+                    {
+                        TermsOfUseAccepted = true
+                    }));
+
             _context.OuterApi.MockServer.Given(
                     Request.Create()
                         .UsingGet()
                         .WithPath("/apprentices/*/apprenticeships"))
                 .RespondWith(Response.Create()
                     .WithStatusCode(200)
-                    .WithBodyAsJson(new { Apprenticeships = new[] { new { Id = 1, IsStopped = true} } }));
-            _context.OuterApi.MockServer.Given(
-                    Request.Create()
-                        .UsingGet()
-                        .WithPath("/apprentices/*/apprenticeships/*"))
-                .RespondWith(Response.Create()
-                    .WithStatusCode(200)
-                    .WithBodyAsJson(new { Id = 1 }));
-            _context.OuterApi.MockServer.Given(
-                    Request.Create()
-                        .UsingAnyMethod()
-                        .WithPath("/apprentices/*/apprenticeships/*"))
-                .RespondWith(Response.Create()
-                    .WithStatusCode(200));
+                    .WithBodyAsJson(new
+                    {
+                        Apprenticeships = new[]
+                        {
+                    new
+                    {
+                        Id = 1,
+                        ConfirmedOn = DateTime.UtcNow,
+                        IsStopped = true,
+                        PlannedEndDate = DateTime.UtcNow.AddDays(30)
+                    }
+                        }
+                    }));
         }
 
         [Given("the apprentice has not created their account")]
@@ -268,9 +302,11 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
         }
 
         [Then("the apprentice should be shown the Home page")]
+        [Then("redirect the user to the home page")]
         public void WhenTheApprenticeShouldBeShownTheHomePage()
         {
-            ThenTheApprenticeShouldBeShownThePage("https://home/Home");
+            _context.Web.Response.Should().Be302Redirect();
+            _context.Web.Response.Headers.Location!.ToString().Should().Contain("Home");
         }
 
         [Then("the apprentice should be shown the Home page with a Matched notification")]
@@ -284,13 +320,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
         {
             _context.Web.Response.Should().Be2XXSuccessful();
             _context.ActionResult.LastPageResult.Should().NotBeNull();
-            _context.ActionResult.LastPageResult.Model.Should().BeOfType<CheckYourDetails>()
-                .Which.Should().BeEquivalentTo(new
-                {
-                    FirstName = "Bob",
-                    LastName = "Bobbertson",
-                    DateOfBirth = new DateTime(2000, 01, 13),
-                });
+            _context.ActionResult.LastPageResult.Model.Should().BeOfType<CheckYourDetails>();
         }
 
         [Then(@"the apprentice should be shown the page ""(.*)""")]

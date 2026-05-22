@@ -1,0 +1,107 @@
+@page 
+@model SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships.TermsModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SFA.DAS.ApprenticeCommitments.Web.Helpers
+@using SFA.DAS.ApprenticeCommitments.Web.TagHelpers
+@using SFA.DAS.ApprenticePortal.SharedUi.Menu
+@using WebEssentials.AspNetCore.CdnTagHelpers
+@{
+    ViewData["Title"] = "Accept the terms and conditions";
+}
+
+<main role="main" id="content" class="govuk-main-wrapper">
+    <span id="Top"></span>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <div class="gem-c-heading govuk-!-margin-bottom-8">
+                <h1 class="gem-c-heading__text govuk-heading-xl">
+                    Accept the terms and conditions
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-m">To use this service</h2>
+
+            <p class="govuk-body">You must be:</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>a minimum of 15 years old</li>
+                <li>on an apprenticeship</li>
+            </ul>
+
+            <h2 class="govuk-heading-m">By using this service</h2>
+
+            <p class="govuk-body">You must agree to:</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>use a legitimate email address that only you have access to</li>
+                <li>keep your log in details secure and not share them with anyone</li>
+                <li>provide true and accurate information</li>
+                <li>not allow anyone to confirm any data on your behalf</li>
+                <li>not submit data on anyone else's behalf</li>
+                <li>sign out at the end of each session</li>
+                <li>adhere to the Computer Misuse Act 1990</li>
+                <li>notify us of a change to your email address</li>
+                <li>be contacted by email to give feedback on your training provider</li>
+            </ul>
+
+            <h2 class="govuk-heading-m">Responsibility for the service</h2>
+
+            <p class="govuk-body">This service is run by the Department for Education. We do our best to make sure this service:</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>is constantly available</li>
+                <li>is virus free</li>
+                <li>alerts users to any changes to terms of use and updates to the service</li>
+            </ul>
+
+            <p class="govuk-body">The Department for Education accepts no liability for:</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>you being unable to access the service (for example, because of excessive demand or because we've taken the service down for maintenance)</li>
+                <li>delay or failure in receiving data</li>
+                <li>indirect damages arising from you using the service or relying on its content</li>
+                <li>the content and availability of external websites that link to the service or which are linked from it</li>
+            </ul>
+
+            <h2 class="govuk-heading-m">Cookies</h2>
+
+            <p class="govuk-body">Cookies are files saved on your phone, tablet or computer when you visit an app or website. We use cookies to store information about how you use this app, such as the pages you visit.</p>
+
+            <p class="govuk-body">We use Google Analytics and Microsoft Clarity to measure how you use the app so we can improve it based on user needs. We do not allow Google or Microsoft to use or share the data about how you use this app.</p>
+
+            <p class="govuk-body">Google Analytics and Microsoft Clarity set cookies that store anonymised information about:</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>how you got to the app</li>
+                <li>the pages you visit on GOV.UK and government digital services, and how long you spend on each page</li>
+                <li>what you click on while you're visiting the app</li>
+            </ul>
+
+            <form method="post">
+                <div class="govuk-form-group">
+                    <div class="govuk-checkboxes">
+                        <div class="govuk-checkboxes__item">
+                            <input class="govuk-checkboxes__input" asp-for="TermsOfUseAccepted" id="accept-terms" name="accept-terms" type="checkbox" value="accepted" onchange="document.getElementById('continue-button').disabled = !this.checked;">
+                            <label class="govuk-label govuk-checkboxes__label" for="accept-terms">
+                                I accept the terms and conditions and consent to the use of cookies
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="govuk-button" data-module="govuk-button" asp-page-handler="Confirm" id="continue-button" disabled>
+                    Continue
+                </button>
+            </form>
+
+            <script>
+                // Initialize button state on page load
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.getElementById('continue-button').disabled = true;
+                });
+            </script>
+            
+            
+        </div>
+    </div>
+</main>

@@ -66,7 +66,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.UnitTests.Features
         [When("accessing the view page")]
         public async Task WhenAccessingTheViewPage()
         {
-            await _context.Web.Get($"/apprenticeships/{_apprenticeshipId.Hashed}/view");
+            await _context.Web.Get($"/apprenticeships/{_apprenticeshipId.Hashed}");
         }
 
         [Then("the response status code should be Ok")]

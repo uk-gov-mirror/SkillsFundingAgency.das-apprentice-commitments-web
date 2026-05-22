@@ -29,6 +29,8 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Services.OuterApi
         public DateTime? StoppedReceivedOn { get; set; }
         public bool IsStopped { get; set; }
         public bool? RecognisePriorLearning { get; set; }
+        public int? DurationReducedByHours { get; set; }
+        public int? DurationReducedBy { get; set; }
         public int? ApprenticeshipType { get; set; }
         public ChangeOfCircumstanceNotifications ChangeOfCircumstanceNotifications { get; set; }
     }
@@ -61,7 +63,8 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Services.OuterApi
         None = 0,
         ApprenticeRolesAndResponsibilitiesConfirmed = 1,
         EmployerRolesAndResponsibilitiesConfirmed = 2,
-        ProviderRolesAndResponsibilitiesConfirmed = 4
+        ProviderRolesAndResponsibilitiesConfirmed = 4,
+        All = 7
     }
 
     public static class RolesAndResponsibilitiesConfirmationsExtensions
