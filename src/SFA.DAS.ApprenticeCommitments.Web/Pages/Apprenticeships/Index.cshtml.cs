@@ -17,7 +17,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
     public class ApprenticeshipIndexModel : PageModel
     {
         private readonly ApprenticeApi _client;
-        private readonly IOuterApiClient _outerApiClient;        
+        private readonly IOuterApiClient _outerApiClient;
         private readonly ILogger<ApprenticeshipIndexModel> _logger;
         private readonly NavigationUrlHelper _urlHelper;
         private readonly CommitmentsService _commitmentsService;
@@ -25,7 +25,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
         public ApprenticeshipIndexModel(ApprenticeApi client, IOuterApiClient outerApiClient, ILogger<ApprenticeshipIndexModel> logger, NavigationUrlHelper urlHelper, CommitmentsService commitmentsService)
         {
             _client = client;
-            _outerApiClient = outerApiClient;            
+            _outerApiClient = outerApiClient;
             _logger = logger;
             _urlHelper = urlHelper;
             _commitmentsService = commitmentsService;
@@ -53,10 +53,10 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
                     return RedirectToAction("Register", "Registration", registrationCode);
                 }
 
-                var email = user.Email?.Address;                
-                
+                var email = user.Email?.Address;
+
                 // Gets Revision
-                var revision = await _client.TryGetApprenticeships(user.ApprenticeId);                
+                var revision = await _client.TryGetApprenticeships(user.ApprenticeId);
 
                 if (!string.IsNullOrWhiteSpace(email))
                 {
@@ -69,10 +69,10 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
                         }
 
                         if (revision != null && revision.Apprenticeships.Count > 0)
-                        {                            
+                        {
                             for (int i = 0; i < revision.Apprenticeships.Count; i++)
                             {
-                                var apprenticeship = revision.Apprenticeships[i];                                                       
+                                var apprenticeship = revision.Apprenticeships[i];
 
                                 if (!apprenticeship.IsStopped && apprenticeship.ConfirmedOn == null && apprenticeship.PlannedEndDate >= DateTime.Now)
                                 {
@@ -87,7 +87,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
 
                                 continue;
                             }
-                            
+
                             _logger.LogInformation("User has a no active Apprenticeships, Sending to check registration | {RevisionIds}",
                                 string.Join(",", revision.Apprenticeships.Select(x => x.Id)));
                             return await HandleRegistration(email, user.ApprenticeId);
@@ -95,11 +95,12 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
 
                         return RedirectToPage("AccountNotFound");
 
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         _logger.LogInformation("Email does not match any registration record | {ex}", ex);
                         return RedirectToPage("/CheckYourDetails");
-                    }                    
+                    }
                 }
 
                 return RedirectToPage("AccountNotFound");
@@ -110,35 +111,27 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Pages.Apprenticeships
         {
             try
             {
-                var registrationByEmail = await _outerApiClient.GetRegistrationsByEmail(email);
+                var registrationByEmail = await _outerApiClient.GetRegistrationsByEmail(email);                              
 
-                if (registrationByEmail.Count == 1)
+                var firstName = registrationByEmail.FirstName;
+                var lastName = registrationByEmail.LastName;
+                if (firstName == null || lastName == null)
                 {
-                    // Matches single record - send to confirmation page
-                    var registration = registrationByEmail[0];
-
-                    var firstName = registration.FirstName;
-                    var lastName = registration.LastName;
-
-                    if (firstName == null || lastName == null)
-                    {
-                        _logger.LogInformation("Registration record does not contain first name and last name | {RegistrationId}", registration.RegistrationId);
-                        return RedirectToPage("/CheckYourDetails");
-                    }
-
-                    await _commitmentsService.EnsureApprenticeHasBasicFields(apprenticeId, firstName, lastName, registration.DateOfBirth);
-
-                    var model = await _commitmentsService.GenerateConfirmationModel(apprenticeId, registration.RegistrationId, registration.CommitmentsApprenticeshipId);
-                    TempData["ConfirmationModel"] = JsonSerializer.Serialize(model);
-                    return RedirectToPage("/ConfirmYourApprenticeship");
+                    _logger.LogInformation("Registration record does not contain first name and last name | {RegistrationId}", registrationByEmail.RegistrationId);
+                    return RedirectToPage("/CheckYourDetails");
                 }
-            } catch (Exception ex)
+
+                await _commitmentsService.EnsureApprenticeHasBasicFields(apprenticeId, firstName, lastName, registrationByEmail.DateOfBirth);
+
+                var model = await _commitmentsService.GenerateConfirmationModel(apprenticeId, registrationByEmail.RegistrationId, registrationByEmail.CommitmentsApprenticeshipId);
+                TempData["ConfirmationModel"] = JsonSerializer.Serialize(model);
+                return RedirectToPage("/ConfirmYourApprenticeship");
+            }
+            catch (Exception ex)
             {
                 _logger.LogInformation("Email does not match any registration record | {ex}", ex);
                 return RedirectToPage("/CheckYourDetails");
             }
-
-            return RedirectToPage("/CheckYourDetails");
-        }       
+        }
     }
 }

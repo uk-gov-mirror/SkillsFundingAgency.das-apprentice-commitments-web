@@ -23,7 +23,7 @@ namespace SFA.DAS.ApprenticeCommitments.Web.Services.OuterApi
         Task<List<Registration>> GetRegistrationByAccountDetails([Query] string firstName, [Query] string lastName, [Query] string dateOfBirth);
 
         [Get("/registrations/email")]
-        Task<List<Registration>> GetRegistrationsByEmail([Query] string email);
+        Task<Registration> GetRegistrationsByEmail([Query] string email);
 
         [Post("/registrations")]
         Task VerifyRegistration([Body] VerifyRegistrationRequest verification);
